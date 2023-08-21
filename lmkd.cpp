@@ -92,6 +92,7 @@ static inline void trace_kill_end() {}
 #define PROC_STATUS_RSS_FIELD "VmRSS:"
 #define PROC_STATUS_SWAP_FIELD "VmSwap:"
 #define LINE_MAX 128
+#define NODE_STATS_MARKER "  per-node stats"
 
 #define PERCEPTIBLE_APP_ADJ 200
 
@@ -1762,9 +1763,9 @@ static int zoneinfo_parse(struct zoneinfo *zi) {
          line = strtok_r(NULL, "\n", &save_ptr)) {
         int node_id;
         if (sscanf(line, "Node %d, zone %" STRINGIFY(LINE_MAX) "s", &node_id, zone_name) == 2) {
-            if (!node || node->id != node_id) {
+            if (!node || node->id != node_id || pnode_ret) {
                 /* new node is found */
-                if (node) {
+                if (node && node->id != node_id) {
                     node->zone_count = zone_idx + 1;
                     node_idx++;
                     if (node_idx == MAX_NR_NODES) {
